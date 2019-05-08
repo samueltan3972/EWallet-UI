@@ -1,0 +1,2 @@
+cd ewalletui
+npm install
