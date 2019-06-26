@@ -29,7 +29,7 @@ Router({
           name: 'register',
           component: require('./components/register.vue').default,
           meta: { public: true, requiresGuest: true, title: 'register' }
-        }
+        },
       ]
     },
     { path: '*', component: require('./components/error/404.vue').default }
@@ -43,7 +43,7 @@ router.beforeEach((to, from, next) => {
 
   if (!isPublic && !loggedIn) {
     return next({
-      path:'/login',
+      //path:'/login',
       query: {redirect: to.fullPath}  // Store the full path to redirect the user to after login
     });
   }
