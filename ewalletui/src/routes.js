@@ -32,7 +32,11 @@ Router({
         },
       ]
     },
-    { path: '*', component: require('./components/error/404.vue').default }
+    {
+      path: '*',
+      component: require('./components/error/404.vue').default,
+      meta: { public: true, title: '404' }
+    }
   ],
 });
 
@@ -43,7 +47,7 @@ router.beforeEach((to, from, next) => {
 
   if (!isPublic && !loggedIn) {
     return next({
-      //path:'/login',
+      path:'/login',
       query: {redirect: to.fullPath}  // Store the full path to redirect the user to after login
     });
   }
