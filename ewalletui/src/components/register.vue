@@ -13,11 +13,11 @@
                   <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-card-text>
-                  <v-form>
-                    <v-text-field v-model="username" prepend-icon="person" name="username" label="Username" type="text"></v-text-field>
-                    <v-text-field v-model="email" prepend-icon="email" name="email" label="Email" type="email"></v-text-field>
-                    <v-text-field v-model="password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
-                    <v-text-field v-model="password" prepend-icon="lock" name="confirm_pass" label="Confirm Password" id="confirm_pass" type="password"></v-text-field>
+                  <v-form ref="form">
+                    <v-text-field v-model="username" :rules="usernameRules" :error-messages="error.name" prepend-icon="person" name="username" label="Username" type="text"></v-text-field>
+                    <v-text-field v-model="email" :rules="emailRules" :error-messages="error.email" prepend-icon="email" name="email" label="Email" type="email"></v-text-field>
+                    <v-text-field v-model="password" :rules="passwordRules" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+                    <v-text-field v-model="confirm_pass" :rules="confirm_passRules" prepend-icon="lock" name="confirm_pass" label="Confirm Password" id="confirm_pass" type="password"></v-text-field>
                   </v-form>
                 </v-card-text>
                 <v-card-actions>
@@ -26,6 +26,7 @@
                 </v-card-actions>
               </v-card>
             </v-flex>
+            <FlashMessage></FlashMessage>
           </v-layout>
         </v-container>
       </v-content>
@@ -33,27 +34,63 @@
   </div>
 </template>
 <script>
-import ApiService from '../services/api.service'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   data(){
     return{
       username: '',
+      usernameRules:[
+        v => !!v || 'Username is required'
+      ],
+
       email: '',
+      emailRules:[
+        v => !!v || 'Email is required',
+        v => /.+@.+/.test(v) || 'Email must be valid'
+      ],
+
       password: '',
-      confirm_pass: ''
+      passwordRules:[
+        v => !!v || 'Password is required',
+        v => (v && v.length >= 8) || 'Password must be at least 8 characters'
+      ],
+
+      confirm_pass: '',
+      confirm_passRules:[
+        v => !!v || 'Password confirmation is required',
+        v => (v && v == this.password) || 'Password confirmation must be same with password'
+      ],
+
+      error:{
+        email: '',
+        name: ''
+      }
     }
   },
+  computed:{
+    ...mapGetters('auth',[
+      'registerError'
+    ])
+  },
   methods: {
-    submitLogin(){
-      var data = {
-        username: this.username,
-        email: this.email,
-        password: this.password,
-        confirm_pass: this.confirm_pass
-      }
+    ...mapActions('auth', [
+          'register'
+      ]),
+    submitRegister(){
+      var self = this
 
-      console.log(ApiService.post("api/login", data))
+      if (this.$refs.form.validate()) {
+          this.register({username: this.username, email: this.email, password: this.password, password_confirmation: this.confirm_pass})
+            .then(function(r){
+              if(!r){
+                self.error = self.registerError
+              } else{
+                self.flashMessage.success({title: 'Success', message: 'Register success!'})
+              }
+          })
+
+      }
     }
   }
 }

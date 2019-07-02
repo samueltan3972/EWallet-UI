@@ -5,6 +5,8 @@ const ApiService = {
 
     init(baseURL) {
         axios.defaults.baseURL = baseURL;
+        axios.defaults.headers.common["Access-Control-Allow-Origin"] = baseURL;
+        axios.defaults.headers.common["Accept"] = 'application/json';
     },
 
     setHeader() {

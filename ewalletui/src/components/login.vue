@@ -11,9 +11,9 @@
                   <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-card-text>
-                  <v-form>
-                    <v-text-field v-model="username" prepend-icon="person" name="username" label="Username" type="text"></v-text-field>
-                    <v-text-field v-model="password" prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+                  <v-form ref="form">
+                    <v-text-field v-model="email" :rules="emailRules" prepend-icon="person" name="email" label="Email" type="text" required></v-text-field>
+                    <v-text-field v-model="password" :rules="passwordRules" prepend-icon="lock" name="password" label="Password" id="password" type="password" required></v-text-field>
                   </v-form>
                 </v-card-text>
                 <v-card-actions>
@@ -22,30 +22,56 @@
                 </v-card-actions>
               </v-card>
             </v-flex>
+            <FlashMessage></FlashMessage>
           </v-layout>
         </v-container>
       </v-content>
     </v-app>
   </div>
 </template>
+
 <script>
-import ApiService from '../services/api.service'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   data(){
     return{
-      email: '',
-      password: ''
+      email: "",
+      emailRules:[
+        v => !!v || 'Email is required'
+      ],
+      password: "",
+      passwordRules:[
+        v => !!v || 'Password is required'
+      ]
     }
   },
+  computed:{
+    ...mapGetters('auth',[
+      'authenticating',
+      'authenticationError',
+      'authenticationErrorCode'
+    ])
+  },
   methods: {
+    ...mapActions('auth', [
+          'login'
+      ]),
     submitLogin(){
-      var data = {
-        email: this.email,
-        password: this.password
-      }
+      var self = this
 
-      console.log(ApiService.post("api/login", data))
+      if (this.$refs.form.validate()) {
+          this.login({email: this.email, password: this.password})
+            .then(function(r){
+              if(!r){
+                self.flashMessage.error({title: 'Error', message: 'Invalid email or password!'})
+                self.password = ""
+              } else{
+                self.flashMessage.success({title: 'Success', message: 'Login success!'})
+              }
+          })
+
+      }
     }
   }
 }

@@ -21,32 +21,49 @@ const UserService = {
     login: async function(email, password) {
         const requestData = {
             method: 'post',
-            url: "/o/token/",
+            url: "/api/login",
             data: {
-                grant_type: 'password',
-                username: email,
+                email: email,
                 password: password
-            },
-            auth: {
-                username: process.env.VUE_APP_CLIENT_ID,
-                password: process.env.VUE_APP_CLIENT_SECRET
             }
         }
 
         try {
             const response = await ApiService.customRequest(requestData)
 
-            TokenService.saveToken(response.data.access_token)
-            TokenService.saveRefreshToken(response.data.refresh_token)
+            TokenService.saveToken(response.data.token)
             ApiService.setHeader()
 
-            // NOTE: We haven't covered this yet in our ApiService
-            //       but don't worry about this just yet - I'll come back to it later
-            ApiService.mount401Interceptor();
-
-            return response.data.access_token
+            return response.data.token
         } catch (error) {
-            throw new AuthenticationError(error.response.status, error.response.data.detail)
+            throw new AuthenticationError(error.response.status, error.response.data.message)
+        }
+    },
+
+    /**
+     *
+    **/
+    register: async function(username, email, password, password_confirmation) {
+        const requestData = {
+            method: 'post',
+            url: "/api/register",
+            data: {
+                name: username,
+                email: email,
+                password: password,
+                password_confirmation: password_confirmation
+            }
+        }
+
+        try {
+            const response = await ApiService.customRequest(requestData)
+
+            TokenService.saveToken(response.data.token)
+            ApiService.setHeader()
+
+            return response.data.token
+        } catch (error) {
+            throw error.response.data.errors
         }
     },
 
@@ -93,6 +110,7 @@ const UserService = {
         // Remove the token and remove Authorization header from Api Service as well
         TokenService.removeToken()
         TokenService.removeRefreshToken()
+        ApiService.get("api/logout")
         ApiService.removeHeader()
 
         // NOTE: Again, we'll cover the 401 Interceptor a bit later.
