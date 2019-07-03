@@ -34,7 +34,8 @@ const UserService = {
             TokenService.saveToken(response.data.token)
             ApiService.setHeader()
 
-            return response.data.token
+            return {token: response.data.token, user: response.data.user}
+
         } catch (error) {
             throw new AuthenticationError(error.response.status, error.response.data.message)
         }
@@ -67,38 +68,14 @@ const UserService = {
         }
     },
 
-    /**
-     * Refresh the access token.
-    **/
-    refreshToken: async function() {
-        const refreshToken = TokenService.getRefreshToken()
-
+    getUserObj: async function() {
         const requestData = {
-            method: 'post',
-            url: "/o/token/",
-            data: {
-                grant_type: 'refresh_token',
-                refresh_token: refreshToken
-            },
-            auth: {
-                username: process.env.VUE_APP_CLIENT_ID,
-                password: process.env.VUE_APP_CLIENT_SECRET
-            }
+            method: 'get',
+            url: "/api/getUserObj"
         }
 
-        try {
-            const response = await ApiService.customRequest(requestData)
-
-            TokenService.saveToken(response.data.access_token)
-            TokenService.saveRefreshToken(response.data.refresh_token)
-            // Update the header in ApiService
-            ApiService.setHeader()
-
-            return response.data.access_token
-        } catch (error) {
-            throw new AuthenticationError(error.response.status, error.response.data.detail)
-        }
-
+        const response = await ApiService.customRequest(requestData)
+        return {user: response.data}
     },
 
     /**
@@ -112,9 +89,6 @@ const UserService = {
         TokenService.removeRefreshToken()
         ApiService.get("api/logout")
         ApiService.removeHeader()
-
-        // NOTE: Again, we'll cover the 401 Interceptor a bit later.
-        ApiService.unmount401Interceptor()
     }
 }
 

@@ -1,6 +1,7 @@
 // routes.js
 import Vue from 'vue'
 import Router from 'vue-router'
+import { TokenService } from './services/storage.service'
 
 Vue.use(Router)
 
@@ -30,7 +31,23 @@ Router({
           component: require('./components/register.vue').default,
           meta: { public: true, requiresGuest: true, title: 'register' }
         },
+        {
+          path: 'pay',
+          name: 'pay',
+          component: require('./components/customer/pay.vue').default,
+          meta: { title: 'pay' }
+        },
+        {
+          path: 'receive',
+          name: 'receive',
+          component: require('./components/customer/receive.vue').default,
+          meta: { title: 'receive' }
+        },
       ]
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard'
     },
     {
       path: '*',
@@ -43,7 +60,7 @@ Router({
 router.beforeEach((to, from, next) => {
   const isPublic = to.matched.some(record => record.meta.public)
   const onlyWhenLoggedOut = to.matched.some(record => record.meta.requiresGuest)
-  const loggedIn = false; // !!TokenService.getToken() &&
+  const loggedIn = !!TokenService.getToken()
 
   if (!isPublic && !loggedIn) {
     return next({

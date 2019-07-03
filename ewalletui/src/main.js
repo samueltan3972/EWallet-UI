@@ -1,18 +1,30 @@
 import Vue from 'vue'
+
+// Dependency
 import './plugins/vuetify'
-import App from './App.vue'
-import { TokenService } from './services/storage.service'
+import FlashMessage from '@smartweb/vue-flash-message'
+import VueQrcodeReader from "vue-qrcode-reader"
+import VueQrcode from '@chenfengyuan/vue-qrcode';
 
-import ApiService from './services/api.service'
-ApiService.init(process.env.VUE_APP_ROOT_API)
-
-import store from './store/index.js'
-
-import router from './routes';
 require('dotenv').config()
 
-import FlashMessage from '@smartweb/vue-flash-message';
 Vue.use(FlashMessage, {time: 3000});
+Vue.use(VueQrcodeReader);
+Vue.component(VueQrcode.name, VueQrcode);
+
+// System file - Vuex, axios, router
+import App from './App.vue'
+import { TokenService } from './services/storage.service'
+import ApiService from './services/api.service'
+import store from './store/index.js'
+import router from './routes'
+
+ApiService.init(process.env.VUE_APP_ROOT_API)
+
+// Helper function
+import popup from './helper/popup'
+
+Vue.prototype.$popup = popup
 
 Vue.config.productionTip = false
 
@@ -25,5 +37,5 @@ if (TokenService.getToken()) {
 new Vue({
   render: h => h(App),
   router,
-  store
+  store,
 }).$mount('#app')

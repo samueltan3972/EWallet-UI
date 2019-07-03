@@ -8,7 +8,8 @@ const state =  {
     accessToken: TokenService.getToken(),
     authenticationErrorCode: 0,
     authenticationError: '',
-    registerError: {}
+    registerError: {},
+    userObj: {}
 }
 
 const getters = {
@@ -30,6 +31,10 @@ const getters = {
 
     registerError: (state) => {
       return state.registerError
+    },
+
+    userObj: (state) => {
+      return state.userObj
     }
 }
 
@@ -38,8 +43,9 @@ const actions = {
         commit('loginRequest');
 
         try {
-            const token = await UserService.login(email, password);
-            commit('loginSuccess', token)
+            const response = await UserService.login(email, password);
+            commit('userObj', response.user)
+            commit('loginSuccess', response.token)
 
             // Redirect the user to the page he first tried to visit or to the home view
             router.push(router.history.current.query.redirect || '/');
@@ -66,10 +72,16 @@ const actions = {
 
             return true
         } catch (e) {
-            console.log(e)
             commit('registerError', e)
             return false
         }
+    },
+
+    async getUserObj({ commit }) {
+      const response = await UserService.getUserObj();
+      commit('userObj', response.user)
+
+      return true
     },
 
     logout({ commit }) {
@@ -95,6 +107,10 @@ const mutations = {
         state.authenticating = false
         state.authenticationErrorCode = errorCode
         state.authenticationError = errorMessage
+    },
+
+    userObj(state, userObj){
+      state.userObj = userObj
     },
 
     registerError(state, err){
