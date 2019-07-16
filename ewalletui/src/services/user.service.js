@@ -74,8 +74,17 @@ const UserService = {
             url: "/api/getUserObj"
         }
 
-        const response = await ApiService.customRequest(requestData)
-        return {user: response.data}
+        try {
+          const response = await ApiService.customRequest(requestData)
+
+          return {user: response.data}
+        } catch (error) {
+          TokenService.removeToken()
+          TokenService.removeRefreshToken()
+          ApiService.removeHeader()
+        }
+
+
     },
 
     /**

@@ -5,11 +5,13 @@ import './plugins/vuetify'
 import FlashMessage from '@smartweb/vue-flash-message'
 import VueQrcodeReader from "vue-qrcode-reader"
 import VueQrcode from '@chenfengyuan/vue-qrcode';
+import LoadScript from 'vue-plugin-load-script';
 
 require('dotenv').config()
 
 Vue.use(FlashMessage, {time: 3000});
 Vue.use(VueQrcodeReader);
+Vue.use(LoadScript);
 Vue.component(VueQrcode.name, VueQrcode);
 
 // System file - Vuex, axios, router

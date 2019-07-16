@@ -54,6 +54,11 @@ export default {
       this.checkBalance()
       this.getUserObj()
     }
+  },
+  watcher:{
+    isLoggedIn(){
+      this.router.push('home')
+    }
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-dialog v-model="$store.state.dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+  <v-dialog v-model="$store.state.dialog" fullscreen hide-overlay>
     <v-card>
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="$store.state.dialog = false">
@@ -48,18 +48,20 @@ export default {
         'checkBalance'
       ]),
     reloadSubmit(){
-      var self = this
-
-      this.topup({ amount: this.amount }).
-        then(function(message){
-          if(message != "ok"){
-            self.flashMessage.error({title: 'Error', message: message})
-          } else {
-            self.checkBalance()
-            self.$store.state.dialog = false
-            self.flashMessage.success({title: 'Success', message: "Reload successful"})
-          }
-        })
+      this.$store.state.dialog = false
+      this.$popup('checkout.vue', { amount: this.amount })
+      // var self = this
+      //
+      // this.topup({ amount: this.amount }).
+      //   then(function(message){
+      //     if(message != "ok"){
+      //       self.flashMessage.error({title: 'Error', message: message})
+      //     } else {
+      //       self.checkBalance()
+      //       self.$store.state.dialog = false
+      //       self.flashMessage.success({title: 'Success', message: "Reload successful"})
+      //     }
+      //   })
     }
   }
 }

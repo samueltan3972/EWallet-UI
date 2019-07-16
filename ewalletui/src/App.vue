@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view />
-    <component :is="popup" :props="props"/>
+    <component :is="popup" :props="props" transition="dialog-bottom-transition"/>
   </div>
 </template>
 
