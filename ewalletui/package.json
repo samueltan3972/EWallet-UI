@@ -10,7 +10,7 @@
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^1.0.1",
     "@smartweb/vue-flash-message": "^0.4.1",
-    "axios": "^0.19.0",
+    "axios": "^0.21.2",
     "core-js": "^2.6.5",
     "npm": "^6.9.2",
     "vue": "^2.6.10",
